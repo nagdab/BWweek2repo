@@ -1,44 +1,40 @@
-#!/usr/bin/env python
+# Standard imports
 import cv2
-import rospy
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge, CvBridgeError
-import threading
+import numpy as np;
+import imutils
 
+# Read image
+im = cv2.imread("frame0070.jpg")
 
-class Echo:
-    def __init__(self):
-        self.node_name = "Echo"
-        self.thread_lock = threading.Lock()
-        self.sub_image = rospy.Subscriber("/camera/rgb/image_rect_color",\
-                Image, self.cbImage, queue_size=1)
-        self.pub_image = rospy.Publisher("~echo_image",\
-                Image, queue_size=1)
-        self.bridge = CvBridge()
+hsv = cv2.cvtColor(im, cv2.COLOR_BGR2HSV)
 
-        rospy.loginfo("[%s] Initialized." %(self.node_name))
+r1 = np.array([0, 100, 200])
 
-    def cbImage(self,image_msg):
-        thread = threading.Thread(target=self.processImage,args=(image_msg,))
-        thread.setDaemon(True)
-        thread.start()
+r2 = np.array([15, 255, 255])
+mask = cv2.inRange(hsv, r1, r2)
 
+mask = cv2.GaussianBlur(mask, (21,21), 0)
+mask = cv2.erode(mask, (3, 3), iterations=5)
+contours, h = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    def processImage(self, image_msg):
-        if not self.thread_lock.acquire(False):
-            return
-        image_cv = self.bridge.imgmsg_to_cv2(image_msg)
-        
-        try:
-            self.pub_image.publish(\
-                    self.bridge.cv2_to_imgmsg(image_cv, "bgr8"))
-        except CvBridgeError as e:
-            print(e)
-        self.thread_lock.release()
+cv2.drawContours(im, contours, -1, (0, 255, 0))
 
+for j in range(0, len(contours)):
+    #rect = cv2.minAreaRect(contours[j])
+    #box = cv2.cv.BoxPoints(rect)
+    #box = np.int0(box)
+    #cv2.drawContours(im,[box],0,(0,0,255),2)
 
-if __name__=="__main__":
-    rospy.init_node('Echo')
-    e = Echo()
-    rospy.spin()
+    M = cv2.moments(contours[j])
+    cX = int(M["m10"] / M["m00"])
+    cY = int(M["m01"] / M["m00"])
 
+    # draw the contour and center of the shape on the image
+    cv2.drawContours(im, [contours[j]], -1, (0, 255, 0), 2)
+    cv2.circle(im, (cX, cY), 4, (255, 255, 255), -1)
+    cv2.putText(im, "center", (cX - 20, cY - 20),
+    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+
+# Show blobs
+cv2.imshow("o shit wadap", im)
+cv2.waitKey(0)
