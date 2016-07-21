@@ -8,10 +8,15 @@ from racecar.msg import BlobDetections
 from numpy.core.defchararray import lower
 
 class BlobPID():
-    
+    done=False
     e1=0
     e2=0
     
+    def die(self):
+        self.done=True
+        isRight =  #TODO INSERT CALL TO BAVIK'S THINGY
+        WallFollower(isRight)
+
     #get the angle
     def getSteeringCmd(self,error,fullLeft,fullRight):
         Kp =.6
@@ -25,9 +30,13 @@ class BlobPID():
     
     #passed to the subscriber
     def callback(self,msg):
+        if self.done: return
         try:
             print msg.sizes[0]
             self.drive_cmd.drive.steering_angle=self.getSteeringCmd(.5-msg.locations[0].x,-1,1)
+            if msg.sizes[0]>=150000: 
+                self.drive_cmd.drive.speed=-.01
+                self.die()
         except Exception:
             self.drive_cmd.drive.steering_angle = 0
         self.drive.publish(self.drive_cmd) # post this message
@@ -43,7 +52,7 @@ class BlobPID():
         rospy.Subscriber('blob_detections', BlobDetections, self.callback)
         
          # constant travel speed in meters/second
-        speed = 0.0
+        speed = 2.0
         
         # fill out fields in ackermann steering message (to go straight)
         self.drive_cmd = AckermannDriveStamped()
