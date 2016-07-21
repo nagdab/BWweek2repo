@@ -96,3 +96,5 @@ class WallFollower(bool_direction):
         rospy.spin() 
         # always make sure to leave the robot stopped
         self.drive.publish(AckermannDriveStamped())
+if __name__=="__main__":
+    WallFollow(True)

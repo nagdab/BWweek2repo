@@ -14,8 +14,8 @@ class BlobPID():
     
     def die(self):
         self.done=True
-        isRight =  #TODO INSERT CALL TO BAVIK'S THINGY
-        WallFollower(isRight)
+#        isRight =  #TODO INSERT CALL TO BAVIK'S THINGY
+#        WallFollower(isRight)
 
     #get the angle
     def getSteeringCmd(self,error,fullLeft,fullRight):
@@ -35,7 +35,6 @@ class BlobPID():
             print msg.sizes[0]
             self.drive_cmd.drive.steering_angle=self.getSteeringCmd(.5-msg.locations[0].x,-1,1)
             if msg.sizes[0]>=150000: 
-                self.drive_cmd.drive.speed=-.01
                 self.die()
         except Exception:
             self.drive_cmd.drive.steering_angle = 0
@@ -61,7 +60,9 @@ class BlobPID():
 def die():
     print "We dead"
     rospy.loginfo("I died")
-try:
-    BlobPID()
-except Exception:
-    die()
+
+if __name__=="__main__":
+    try:
+        BlobPID()
+    except Exception:
+        die()
