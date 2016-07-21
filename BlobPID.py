@@ -16,27 +16,20 @@ class BlobPID():
     def getSteeringCmd(self,error,fullLeft,fullRight):
         Kp =.6
         Kd = .7
-        de= ((error-self.e2))/.2
+        de= (error-self.e2)
         self.e2=self.e1
         self.e1=error
         u=Kp*error+Kd*de
-        return self.clip(fullLeft,fullRight,u)
+        return u
     
     
     #passed to the subscriber
     def callback(self,msg):
         try:
-            error=.5-msg.locations[0].x
-            if(error>0):
-                self.drive_cmd.drive.steering_angle = 1
-            elif(error<0):
-                self.drive_cmd.drive.steering_angle = -1
-            else:
-                self.drive_cmd.drive.steering_angle = 0
+            print msg.sizes[0]
+            self.drive_cmd.drive.steering_angle=self.getSteeringCmd(.5-msg.locations[0].x,-1,1)
         except Exception:
             self.drive_cmd.drive.steering_angle = 0
-        print(error)
-            
         self.drive.publish(self.drive_cmd) # post this message
     
     def __init__(self):
