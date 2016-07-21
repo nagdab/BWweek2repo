@@ -105,7 +105,10 @@ class Echo:
 			cv2.circle(image_cv, (x+w/2, y+h/2), 4, (255, 255, 255), -1)
 			X = (x+w/2)/float(len(image_cv[0]))
 			Y = (y+h/2)/float(len(image_cv))
+
+			msg = std_msgs.msg.ColorRGBA(255.0, 255.0, 255.0, 128.0)
 			blobs = BlobDetections()
+			blobs.colors= [msg]
 			blobs.sizes = [Float64(cv2.contourArea(bcont))]
 			p = Point()
 			p.x = X
