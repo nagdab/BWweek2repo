@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 
 import rospy
@@ -36,7 +35,7 @@ class BlobPID():
                 self.drive_cmd.drive.steering_angle = 0
         except Exception:
             self.drive_cmd.drive.steering_angle = 0
-        
+        print(error)
             
         self.drive.publish(drive_cmd) # post this message
     

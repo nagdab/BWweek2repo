@@ -25,8 +25,8 @@ class Echo:
         r2 = np.array([15, 255, 230])
         mask = cv2.inRange(hsv, r1, r2)
 
-        mask = cv2.GaussianBlur(mask, (21,21), 0)
-        mask = cv2.erode(mask, (5, 5), iterations=5)
+        mask = cv2.GaussianBlur(mask, (11,11), 0)
+        mask = cv2.erode(mask, (3, 3), iterations=3)
         contours, h = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         if len(contours)>0:

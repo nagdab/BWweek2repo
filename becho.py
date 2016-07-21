@@ -4,8 +4,8 @@ import rospy
 import numpy as np
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-#from geometry_msgs.msg import Point
-#from racecar.msg import BlobDetections
+from geometry_msgs.msg import Point
+from racecar.msg import BlobDetections
 import threading
 
 
@@ -17,7 +17,7 @@ class Echo:
                 Image, self.cbImage, queue_size=1)
         self.pub_image = rospy.Publisher("~echo_image",\
                 Image, queue_size=1)
-	#self.pub_blob = rospy.Publisher("blob_detections", BlobDetections, queue_size=1)
+	self.pub_blob = rospy.Publisher("blob_detections", BlobDetections, queue_size=1)
         self.bridge = CvBridge()
 
         rospy.loginfo("[%s] Initialized." %(self.node_name))
@@ -43,7 +43,6 @@ class Echo:
 	mask = cv2.GaussianBlur(mask, (3,3), 0)
 	X = 0
 	Y = 0
-
 	contours, h = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 	if(len(contours) > 0):
 		bcont = contours[0]
@@ -54,21 +53,21 @@ class Echo:
 		x,y,w,h = cv2.boundingRect(bcont)
 		cv2.rectangle(image_cv,(x,y),(x+w,y+h),(0,255,0),2)
 		cv2.circle(image_cv, (x+w/2, y+h/2), 4, (255, 255, 255), -1)
-		X = x+w/2
-		Y = y+h/2
-	
-	#blobs = BlobDetections()
-	#blobs.sizes = [cv2.contourArea(bcont)]
-	#p = Point()
-	#p.x = X
-	#p.y = Y
-	#p.z = 0
-	#blobs.locations = [p]	
-
+		X = (x+w/2)/float(len(image_cv[0]))
+		Y = (y+h/2)/float(len(image_cv))
+                blobs = BlobDetections()
+		blobs.colors= [[0,0,0,0]]
+		blobs.sizes = [cv2.contourArea(bcont)]
+		p = Point()
+		p.x = X
+		p.y = Y
+		p.z = 0
+		blobs.locations = [p]	
+		print X, " ", Y
+	    	self.pub_blob.publish(blobs)
 	# Image processing stops here
         try:
             self.pub_image.publish(self.bridge.cv2_to_imgmsg(image_cv, "bgr8"))
-	    #self.pub_blob.publish(blobs)
         except CvBridgeError as e:
             print(e)
         self.thread_lock.release()
