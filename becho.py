@@ -3,6 +3,7 @@ import cv2
 import rospy
 import numpy as np
 from sensor_msgs.msg import Image
+from std_msgs.msg import *
 from cv_bridge import CvBridge, CvBridgeError
 from geometry_msgs.msg import Point
 from racecar.msg import BlobDetections
@@ -35,7 +36,7 @@ class Echo:
 
 	# Image processing starts here
 	#filters = [np.array([0, 230, 170]), np.array([6, 255, 255])] # Red
-	filters = [np.array([45, 127, 100]), np.array([67, 255, 255])] # Green
+	filters = [np.array([40, 100, 100]), np.array([73, 255, 255])] # Green
 
 	image_hsv = cv2.cvtColor(image_cv, cv2.COLOR_BGR2HSV)
         
@@ -55,15 +56,17 @@ class Echo:
 		cv2.circle(image_cv, (x+w/2, y+h/2), 4, (255, 255, 255), -1)
 		X = (x+w/2)/float(len(image_cv[0]))
 		Y = (y+h/2)/float(len(image_cv))
+		msg = std_msgs.msg.ColorRGBA(255.0, 255.0, 255.0, 128.0)
                 blobs = BlobDetections()
-		blobs.colors= [[0,0,0,0]]
-		blobs.sizes = [cv2.contourArea(bcont)]
+		blobs.colors= [msg]
+		print(Float64(cv2.contourArea(bcont)))
+		blobs.sizes = [Float64(cv2.contourArea(bcont))]
 		p = Point()
 		p.x = X
 		p.y = Y
 		p.z = 0
 		blobs.locations = [p]	
-		print X, " ", Y
+		#print X, " ", Y
 	    	self.pub_blob.publish(blobs)
 	# Image processing stops here
         try:
