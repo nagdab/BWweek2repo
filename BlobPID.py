@@ -16,8 +16,10 @@ class BlobPID():
     def die(self):
         self.done=True
 	print("got killed")
-        #isRight =  blobColor=="RED"
-        #WallFollower(isRight)
+        isRed =  blobColor=="RED"
+        print "Blob color is %s" % blobColor
+        WallFollower(isRed)
+        
 
     #get the angle
     def getSteeringCmd(self,error,fullLeft,fullRight):
@@ -48,7 +50,7 @@ class BlobPID():
                 self.blobColor = "GREEN"
 
             #Die if close enough  
-            if msg.sizes[0]>=25000: 
+            if msg.sizes[0].data>=25000.0: 
                 self.die()
             
         except Exception:

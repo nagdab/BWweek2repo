@@ -51,8 +51,10 @@ class WallFollower():
         drive_cmd.drive.steering_angle=self.angle
 
         if self.death:
+            print "Wall follower dead"
             drive_cmd.drive.speed=-.1
-        elif drive_cmd.drive.speed>0:
+        else:
+            print "Angle is %f" % self.angle
             drive_cmd.drive.speed = speed
         self.drive.publish(drive_cmd) # post this message
         
@@ -64,6 +66,7 @@ class WallFollower():
         rospy.sleep(1)
     
     def __init__(self,bool_direction):
+        print "Beginning wall follow"
         #setup the node
         rospy.init_node('wall_follower', anonymous=False)
         rospy.on_shutdown(self.shutdown)
@@ -83,6 +86,7 @@ class WallFollower():
         drive_cmd.drive.speed = speed
         
         if self.death:
+            print "Wall follower dead"
             drive_cmd.drive.speed=-.1
         elif drive_cmd.drive.speed>0:
             drive_cmd.drive.speed = speed
