@@ -9,11 +9,11 @@ from ackermann_msgs.msg import AckermannDriveStamped # steering messages
 from sensor_msgs.msg import LaserScan, Joy # joystick and laser scanner msgs
 from numpy.core.defchararray import lower
 
-class WallFollower(bool_direction):
+class WallFollower():
     angle=0
     e1=0
     e2=0
-    right=bool_direction
+    right=True
     death=False
     
     def getError(self,goal,L,begin,end):
@@ -35,14 +35,14 @@ class WallFollower(bool_direction):
         #get the laser information
         if self.right: #right
             error=self.getError(1, msg.ranges, 200, 540)
-            if(error<-.5):
+            if(error>-.5):
                 self.angle=self.getSteeringCmd(error, -1, 1)
             else:
                 self.angle=1
             self.death=min(msg.ranges[525:555])<.5
         else: #left
             error=self.getError(1, msg.ranges, 540,900)
-            if(error<-.5):
+            if(error>-.5):
                 self.angle=self.getSteeringCmd(-error, -1, 1)
             else:
                 self.angle=-1
@@ -63,14 +63,11 @@ class WallFollower(bool_direction):
         self.drive.publish(AckermannDriveStamped())
         rospy.sleep(1)
     
-    def __init__(self):
+    def __init__(self,bool_direction):
         #setup the node
         rospy.init_node('wall_follower', anonymous=False)
         rospy.on_shutdown(self.shutdown)
-        
-        # output messages/sec (also impacts latency)
-        rate = 10 
-        r = rospy.Rate(rate)
+        self.right=bool_direction
         
         # node specific topics (remap on command line or in launch file)
         self.drive = rospy.Publisher('/vesc/ackermann_cmd_mux/input/navigation', AckermannDriveStamped, queue_size=5)
@@ -79,7 +76,7 @@ class WallFollower(bool_direction):
         rospy.Subscriber('scan', LaserScan, self.callback)
         
         # set control parameters
-        speed = 2.0 # constant travel speed in meters/second
+        speed = .6 # constant travel speed in meters/second
         
         # fill out fields in ackermann steering message (to go straight)
         drive_cmd = AckermannDriveStamped()
