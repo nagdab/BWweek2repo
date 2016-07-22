@@ -6,7 +6,7 @@ import numpy
 from ackermann_msgs.msg import AckermannDriveStamped # steering messages
 from racecar.msg import BlobDetections
 from numpy.core.defchararray import lower
-import WallFollower
+import WallFollow
 
 class BlobPID():
     done=False
