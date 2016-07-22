@@ -15,12 +15,17 @@ class WallFollower():
     death=False
     
     def getError(self,goal,L,begin,end):
-        return goal-(min(L[begin:end]))
+	dist = min(L[begin:end])
+	for i in range(begin, end+1):
+	    if(L[i] == dist):
+		if(i >= 530 && i <= 550):
+		    dist *= 2		
+        return (min(L[begin:end]))-goal
         
     #get the angle
     def getSteeringCmd(self,error,fullLeft,fullRight):
         Kp =.6
-        Kd = .7
+        Kd = 0#.7
         de= error-self.e2
         self.e2=self.e1
         self.e1=error
@@ -33,30 +38,30 @@ class WallFollower():
         # fill out fields in ackermann steering message (to go straight)
         drive_cmd = AckermannDriveStamped()
         
-        if self.right: #right
-            error=self.getError(1, msg.ranges, 200, 540)
+        if not self.right: #right
+            error=self.getError(0.5, msg.ranges, 200, 550)
             if(error>-.5):
                 angle=self.getSteeringCmd(error, -1, 1)
             else:
                 angle=1
         else: #left
-            error=self.getError(1, msg.ranges, 540,900)
+            error=self.getError(0.5, msg.ranges, 530,900)
             if(error>-.5):
                 angle=self.getSteeringCmd(error, -1, 1)
             else:
                 angle=-1
         
-        self.death=min(msg.ranges[525:555])<.5
+        self.death=min(msg.ranges[530:550])<.2
         drive_cmd.drive.steering_angle=angle
 
         if self.death:
             print "Wall follower dead"
             drive_cmd.drive.speed=-.1
         else:
-            print "Angle is %f" % self.angle
-            drive_cmd.drive.speed = .6
+            print "Angle is %f" % angle
+            drive_cmd.drive.speed = 0
     
-        self.drive.publish(self.drive_cmd) # post this message
+        self.drive.publish(drive_cmd) # post this message
         
 
     def shutdown(self):
@@ -68,7 +73,8 @@ class WallFollower():
     def __init__(self,bool_direction):
         print "Beginning wall follow"
         #setup the node
-        rospy.init_node('wall_follower', anonymous=False)
+	rospy.init_node('wall_follower', anonymous=False)
+	self.testparam = "a"
         rospy.on_shutdown(self.shutdown)
         self.right=bool_direction
         
@@ -83,3 +89,4 @@ class WallFollower():
         self.drive.publish(AckermannDriveStamped())
 if __name__=="__main__":
     WallFollower(True)
+    rospy.init_node('wall_follower', anonymous=False)

@@ -1,12 +1,10 @@
-#!/usr/bin/env python
-
 import rospy
 import math
 import numpy
 from ackermann_msgs.msg import AckermannDriveStamped # steering messages
 from racecar.msg import BlobDetections
 from numpy.core.defchararray import lower
-import WallFollow
+import WallFollower
 
 class BlobPID():
     done=False
@@ -16,14 +14,15 @@ class BlobPID():
     def die(self):
         self.done=True
 	print("got killed")
-        isRed =  blobColor=="RED"
-        print "Blob color is %s" % blobColor
-        WallFollower(isRed)
+        isRed = self.blobColor=="RED"
+        print "Blob color is %s" % self.blobColor
+        w = WallFollower.WallFollower(isRed)
+	print(w.testparam)
         
 
     #get the angle
     def getSteeringCmd(self,error,fullLeft,fullRight):
-        Kp =.6
+        Kp = 1
         Kd = .7
         de= (error-self.e2)
         self.e2=self.e1
@@ -40,21 +39,21 @@ class BlobPID():
         try:
             print msg.sizes[0]
             
-            
             self.drive_cmd.drive.steering_angle=self.getSteeringCmd(.5-msg.locations[0].x,-1,1)
             
-            
+            print(self.drive_cmd.drive.speed) 
             if(msg.colors[0].r>msg.colors[0].g):
                 self.blobColor = "RED"
             else:
                 self.blobColor = "GREEN"
 
             #Die if close enough  
-            if msg.sizes[0].data>=150000.0: 
+            if msg.sizes[0].data>=9000.0: 
                 self.die()
             
-        except Exception:
+        except Exception, e:
             self.drive_cmd.drive.steering_angle = 0
+	    print(e)
 	print(self.drive_cmd.drive.steering_angle)
         self.drive.publish(self.drive_cmd) # post this message
     

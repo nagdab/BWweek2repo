@@ -35,7 +35,7 @@ class Echo:
 
 		filters_red = [np.array([0, 165, 100]), np.array([6, 255, 255])] # Red
 		filters_red2 = [np.array([170, 165, 170]), np.array([180, 255, 255])] # Red
-		filters_green = [np.array([40, 100, 40]), np.array([88, 255, 255])] # Green
+		filters_green = [np.array([60, 100, 60]), np.array([88, 255, 255])] # Green
 
 		# Image processing starts here
 		image_hsv = cv2.cvtColor(image_cv, cv2.COLOR_BGR2HSV)
