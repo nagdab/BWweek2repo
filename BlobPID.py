@@ -14,7 +14,7 @@ class BlobPID():
     blobColor="RED"
     def die(self):
         self.done=True
-        isRight =  #TODO INSERT CALL TO BAVIK'S THINGY
+        isRight =  blobColor=="RED"
         WallFollower(isRight)
 
     #get the angle
@@ -33,7 +33,17 @@ class BlobPID():
         if self.done: return
         try:
             print msg.sizes[0]
+            
+            
             self.drive_cmd.drive.steering_angle=self.getSteeringCmd(.5-msg.locations[0].x,-1,1)
+            
+            
+            if(msg.colors[0].r>msg.colors[0].g):
+                self.blobColor = "RED"
+            else:
+                self.blobColor = "GREEN"
+              
+            #Die if close enough  
             if msg.sizes[0]>=150000: 
                 self.die()
             
