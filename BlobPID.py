@@ -50,7 +50,7 @@ class BlobPID():
                 self.blobColor = "GREEN"
 
             #Die if close enough  
-            if msg.sizes[0].data>=25000.0: 
+            if msg.sizes[0].data>=150000.0: 
                 self.die()
             
         except Exception:
@@ -69,7 +69,7 @@ class BlobPID():
         rospy.Subscriber('blob_detections', BlobDetections, self.callback)
         
          # constant travel speed in meters/second
-        speed = 0.5
+        speed = 2
         
         # fill out fields in ackermann steering message (to go straight)
         self.drive_cmd = AckermannDriveStamped()

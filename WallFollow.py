@@ -48,15 +48,15 @@ class WallFollower():
                 self.angle=-1
             self.death=min(msg.ranges[525:555])<.5
 
-        drive_cmd.drive.steering_angle=self.angle
+        self.drive_cmd.drive.steering_angle=self.angle
 
         if self.death:
             print "Wall follower dead"
-            drive_cmd.drive.speed=-.1
+            self.drive_cmd.drive.speed=-.1
         else:
             print "Angle is %f" % self.angle
-            drive_cmd.drive.speed = speed
-        self.drive.publish(drive_cmd) # post this message
+            self.drive_cmd.drive.speed = self.speed
+        self.drive.publish(self.drive_cmd) # post this message
         
 
     def shutdown(self):
@@ -79,18 +79,18 @@ class WallFollower():
         rospy.Subscriber('scan', LaserScan, self.callback)
         
         # set control parameters
-        speed = .6 # constant travel speed in meters/second
+        self.speed = .6 # constant travel speed in meters/second
         
         # fill out fields in ackermann steering message (to go straight)
-        drive_cmd = AckermannDriveStamped()
-        drive_cmd.drive.speed = speed
+        self.drive_cmd = AckermannDriveStamped()
+        self.drive_cmd.drive.speed = self.speed
         
         if self.death:
             print "Wall follower dead"
-            drive_cmd.drive.speed=-.1
-        elif drive_cmd.drive.speed>0:
-            drive_cmd.drive.speed = speed
-        self.drive.publish(drive_cmd) # post this message
+            self.drive_cmd.drive.speed=-.1
+        elif self.drive_cmd.drive.speed>0:
+            self.drive_cmd.drive.speed = self.speed
+        self.drive.publish(self.drive_cmd) # post this message
         #Chill out for a bit
         r.sleep()
 
@@ -98,4 +98,4 @@ class WallFollower():
         # always make sure to leave the robot stopped
         self.drive.publish(AckermannDriveStamped())
 if __name__=="__main__":
-    WallFollow(True)
+    WallFollower(True)
