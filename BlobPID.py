@@ -15,6 +15,7 @@ class BlobPID():
     blobColor="RED"
     def die(self):
         self.done=True
+	print("got killed")
         #isRight =  blobColor=="RED"
         #WallFollower(isRight)
 
@@ -32,6 +33,7 @@ class BlobPID():
     #passed to the subscriber
     def callback(self,msg):
         if self.done:
+	    print("oh boy")
 	    return
         try:
             print msg.sizes[0]
@@ -46,11 +48,12 @@ class BlobPID():
                 self.blobColor = "GREEN"
               
             #Die if close enough  
-            if msg.sizes[0]>=150000: 
-                self.die()
+            #if msg.sizes[0]>=1500000000: 
+                #self.die()
             
         except Exception:
             self.drive_cmd.drive.steering_angle = 0
+	print(self.drive_cmd.drive.steering_angle)
         self.drive.publish(self.drive_cmd) # post this message
     
     def __init__(self):
@@ -64,7 +67,7 @@ class BlobPID():
         rospy.Subscriber('blob_detections', BlobDetections, self.callback)
         
          # constant travel speed in meters/second
-        speed = 2.0
+        speed = 0.5
         
         # fill out fields in ackermann steering message (to go straight)
         self.drive_cmd = AckermannDriveStamped()

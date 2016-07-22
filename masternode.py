@@ -28,21 +28,24 @@ class Echo:
         thread.setDaemon(True)
         thread.start()
 		
-	
-
     def processImage(self, image_msg):
 		if not self.thread_lock.acquire(False):
 			return
 		image_cv = self.bridge.imgmsg_to_cv2(image_msg)
 
-		filters_red = [np.array([0, 230, 170]), np.array([6, 255, 255])] # Red
+		filters_red = [np.array([0, 165, 100]), np.array([6, 255, 255])] # Red
+		filters_red2 = [np.array([170, 165, 170]), np.array([180, 255, 255])] # Red
 		filters_green = [np.array([40, 100, 40]), np.array([88, 255, 255])] # Green
 
 		# Image processing starts here
 		image_hsv = cv2.cvtColor(image_cv, cv2.COLOR_BGR2HSV)
 		    
 		mask_red = cv2.inRange(image_hsv, filters_red[0], filters_red[1])
+		mask_red2 = cv2.inRange(image_hsv, filters_red2[0], filters_red2[1])
 		mask_green = cv2.inRange(image_hsv, filters_green[0], filters_green[1])
+
+		#Bridging two red filters
+		mask_red = cv2.bitwise_or(mask_red, mask_red2)
 
 		mask_red = cv2.GaussianBlur(mask_red, (3,3), 0)
 		mask_green = cv2.GaussianBlur(mask_green, (3,3), 0)
@@ -79,8 +82,6 @@ class Echo:
 				c = std_msgs.msg.ColorRGBA(255.0, 0.0, 0.0, 128.0)
 				bcont = bcont_red
 
-
-
 		elif(test_red):
 			bcont_red = contours_red[0]
 			for j in range(0, len(contours_red)):
@@ -98,10 +99,9 @@ class Echo:
 			bcont = bcont_green
 
 		if(test_red or test_green):
-
-			cv2.drawContours(image_cv, [bcont], -1, (int(c.r), int(c.g), 0))
+			cv2.drawContours(image_cv, [bcont], -1, (0, int(c.g), int(c.r)))
 			x,y,w,h = cv2.boundingRect(bcont)
-			cv2.rectangle(image_cv,(x,y),(x+w,y+h),(int(c.r),int(c.g),0),2)
+			cv2.rectangle(image_cv,(x,y),(x+w,y+h),(0,int(c.g),int(c.r),2))
 			cv2.circle(image_cv, (x+w/2, y+h/2), 4, (255, 255, 255), -1)
 			X = (x+w/2)/float(len(image_cv[0]))
 			Y = (y+h/2)/float(len(image_cv))
