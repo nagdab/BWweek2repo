@@ -85,15 +85,6 @@ class WallFollower():
         drive_cmd = AckermannDriveStamped()
         drive_cmd.drive.speed = speed
         
-        if self.death:
-            print "Wall follower dead"
-            drive_cmd.drive.speed=-.1
-        elif drive_cmd.drive.speed>0:
-            drive_cmd.drive.speed = speed
-        self.drive.publish(drive_cmd) # post this message
-        #Chill out for a bit
-        r.sleep()
-
         rospy.spin() 
         # always make sure to leave the robot stopped
         self.drive.publish(AckermannDriveStamped())
