@@ -86,7 +86,7 @@ class Echo:
 			for j in range(0, len(contours_red)):
 				if(cv2.contourArea(contours_red[j]) > cv2.contourArea(bcont_red)):
 					bcont_red = contours_red[j]
-			std_msgs.msg.ColorRGBA(255.0, 0.0, 0.0, 128.0)
+			c = std_msgs.msg.ColorRGBA(255.0, 0.0, 0.0, 128.0)
 			bcont = bcont_red
 
 		elif(test_green):

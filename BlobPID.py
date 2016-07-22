@@ -30,7 +30,8 @@ class BlobPID():
     
     #passed to the subscriber
     def callback(self,msg):
-        if self.done: return
+        if self.done:
+	    return
         try:
             print msg.sizes[0]
             self.drive_cmd.drive.steering_angle=self.getSteeringCmd(.5-msg.locations[0].x,-1,1)
