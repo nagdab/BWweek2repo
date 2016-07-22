@@ -6,6 +6,7 @@ import numpy
 from ackermann_msgs.msg import AckermannDriveStamped # steering messages
 from racecar.msg import BlobDetections
 from numpy.core.defchararray import lower
+import WallFollower
 
 class BlobPID():
     done=False
@@ -14,8 +15,8 @@ class BlobPID():
     blobColor="RED"
     def die(self):
         self.done=True
-        isRight =  blobColor=="RED"
-        WallFollower(isRight)
+        #isRight =  blobColor=="RED"
+        #WallFollower(isRight)
 
     #get the angle
     def getSteeringCmd(self,error,fullLeft,fullRight):
