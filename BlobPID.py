@@ -46,10 +46,10 @@ class BlobPID():
                 self.blobColor = "RED"
             else:
                 self.blobColor = "GREEN"
-              
+
             #Die if close enough  
-            #if msg.sizes[0]>=1500000000: 
-                #self.die()
+            if msg.sizes[0]>=25000: 
+                self.die()
             
         except Exception:
             self.drive_cmd.drive.steering_angle = 0
