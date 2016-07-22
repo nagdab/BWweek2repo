@@ -11,11 +11,11 @@ class BlobPID():
     done=False
     e1=0
     e2=0
-    
+    blobColor="RED"
     def die(self):
         self.done=True
-#        isRight =  #TODO INSERT CALL TO BAVIK'S THINGY
-#        WallFollower(isRight)
+        isRight =  #TODO INSERT CALL TO BAVIK'S THINGY
+        WallFollower(isRight)
 
     #get the angle
     def getSteeringCmd(self,error,fullLeft,fullRight):
@@ -36,6 +36,7 @@ class BlobPID():
             self.drive_cmd.drive.steering_angle=self.getSteeringCmd(.5-msg.locations[0].x,-1,1)
             if msg.sizes[0]>=150000: 
                 self.die()
+            
         except Exception:
             self.drive_cmd.drive.steering_angle = 0
         self.drive.publish(self.drive_cmd) # post this message
