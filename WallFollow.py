@@ -9,7 +9,6 @@ from ackermann_msgs.msg import AckermannDriveStamped # steering messages
 from sensor_msgs.msg import LaserScan # laser scanner msgs
 
 class WallFollower():
-    angle=0
     e1=0
     e2=0
     right=True
@@ -31,29 +30,32 @@ class WallFollower():
     
     #passed to the subscriber
     def callback(self,msg):
-        #get the laser information
+        # fill out fields in ackermann steering message (to go straight)
+        drive_cmd = AckermannDriveStamped()
+        
         if self.right: #right
             error=self.getError(1, msg.ranges, 200, 540)
             if(error>-.5):
-                self.angle=self.getSteeringCmd(error, -1, 1)
+                angle=self.getSteeringCmd(error, -1, 1)
             else:
-                self.angle=1
+                angle=1
         else: #left
             error=self.getError(1, msg.ranges, 540,900)
             if(error>-.5):
-                self.angle=self.getSteeringCmd(error, -1, 1)
+                angle=self.getSteeringCmd(error, -1, 1)
             else:
-                self.angle=-1
+                angle=-1
         
         self.death=min(msg.ranges[525:555])<.5
-        self.drive_cmd.drive.steering_angle=self.angle
+        drive_cmd.drive.steering_angle=angle
 
         if self.death:
             print "Wall follower dead"
-            self.drive_cmd.drive.speed=-.1
+            drive_cmd.drive.speed=-.1
         else:
             print "Angle is %f" % self.angle
-            self.drive_cmd.drive.speed = self.speed
+            drive_cmd.drive.speed = .6
+    
         self.drive.publish(self.drive_cmd) # post this message
         
 
@@ -75,13 +77,6 @@ class WallFollower():
         
         #sets the subscriber
         rospy.Subscriber('scan', LaserScan, self.callback)
-        
-        # set control parameters
-        self.speed = .6 # constant travel speed in meters/second
-        
-        # fill out fields in ackermann steering message (to go straight)
-        self.drive_cmd = AckermannDriveStamped()
-        self.drive_cmd.drive.speed = self.speed
 
         rospy.spin() 
         # always make sure to leave the robot stopped
