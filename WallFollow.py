@@ -6,8 +6,7 @@ import math
 import numpy
 # node specific imports
 from ackermann_msgs.msg import AckermannDriveStamped # steering messages
-from sensor_msgs.msg import LaserScan, Joy # joystick and laser scanner msgs
-from numpy.core.defchararray import lower
+from sensor_msgs.msg import LaserScan # laser scanner msgs
 
 class WallFollower():
     angle=0
@@ -39,15 +38,14 @@ class WallFollower():
                 self.angle=self.getSteeringCmd(error, -1, 1)
             else:
                 self.angle=1
-            self.death=min(msg.ranges[525:555])<.5
         else: #left
             error=self.getError(1, msg.ranges, 540,900)
             if(error>-.5):
-                self.angle=self.getSteeringCmd(-error, -1, 1)
+                self.angle=self.getSteeringCmd(error, -1, 1)
             else:
                 self.angle=-1
-            self.death=min(msg.ranges[525:555])<.5
-
+        
+        self.death=min(msg.ranges[525:555])<.5
         self.drive_cmd.drive.steering_angle=self.angle
 
         if self.death:
@@ -84,15 +82,6 @@ class WallFollower():
         # fill out fields in ackermann steering message (to go straight)
         self.drive_cmd = AckermannDriveStamped()
         self.drive_cmd.drive.speed = self.speed
-        
-        if self.death:
-            print "Wall follower dead"
-            self.drive_cmd.drive.speed=-.1
-        elif self.drive_cmd.drive.speed>0:
-            self.drive_cmd.drive.speed = self.speed
-        self.drive.publish(self.drive_cmd) # post this message
-        #Chill out for a bit
-        r.sleep()
 
         rospy.spin() 
         # always make sure to leave the robot stopped
