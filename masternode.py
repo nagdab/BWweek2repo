@@ -99,9 +99,9 @@ class Echo:
 
 		if(test_red or test_green):
 
-			cv2.drawContours(image_cv, [bcont], -1, (0, 255, 0))
+			cv2.drawContours(image_cv, [bcont], -1, (int(c.r), int(c.g), 0))
 			x,y,w,h = cv2.boundingRect(bcont)
-			cv2.rectangle(image_cv,(x,y),(x+w,y+h),(0,255,0),2)
+			cv2.rectangle(image_cv,(x,y),(x+w,y+h),(int(c.r),int(c.g),0),2)
 			cv2.circle(image_cv, (x+w/2, y+h/2), 4, (255, 255, 255), -1)
 			X = (x+w/2)/float(len(image_cv[0]))
 			Y = (y+h/2)/float(len(image_cv))
