@@ -35,14 +35,14 @@ class WallFollower(bool_direction):
         #get the laser information
         if self.right: #right
             error=self.getError(1, msg.ranges, 200, 540)
-            if(error<-.5):
+            if(error>-.5):
                 self.angle=self.getSteeringCmd(error, -1, 1)
             else:
                 self.angle=1
             self.death=min(msg.ranges[525:555])<.5
         else: #left
             error=self.getError(1, msg.ranges, 540,900)
-            if(error<-.5):
+            if(error>-.5):
                 self.angle=self.getSteeringCmd(-error, -1, 1)
             else:
                 self.angle=-1
